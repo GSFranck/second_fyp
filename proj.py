@@ -34,6 +34,7 @@ def graph_reader(inputfile, *args): # Reads the file, cleans isolates and non_co
     return G
 
 def plot_network(somegraph, graph_type, *args): #Plots. NOTE: IT IS EXTREMELY SLOW AS IT BUILDS ON PAGERANK AND CLOSENESS MEASURE 
+    
     if graph_type == 1:
         nx.draw_kamada_kawai(somegraph, labels = {n: n for n in somegraph.nodes})
         plt.show()
