@@ -9,7 +9,7 @@ from networkx.algorithms.community import greedy_modularity_communities
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import normalize
-from time import sleep
+
 
 
 def graph_reader(inputfile, *args): # Reads the file, cleans isolates and non_connected nodes.
@@ -175,12 +175,3 @@ projected_graph = projector(mygraph, list_of_nodes, projector_type = 3)
 
 
 
-"""
-
-printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
-for i, item in enumerate(items):
-    # Do stuff...
-    sleep(0.1)
-    # Update Progress Bar
-    printProgressBar(i + 1, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
-"""
