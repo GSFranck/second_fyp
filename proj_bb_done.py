@@ -11,12 +11,13 @@ from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import normalize
 
 
+
 def graph_reader(inputfile, *args): # Reads the file, cleans isolates and non_connected nodes.
     G = nx.read_adjlist(inputfile, delimiter = " ", nodetype = int)
     global nodes, rows, cols
     nodes = nx.algorithms.bipartite.basic.sets(G)
     rows = sorted(list(nodes[1]))
-    cols = sorted(list(nodes[0]))
+    cols = sorted(list(nodes[0])) 
     isolates = nx.isolates(G)
 
     if nx.is_connected(G) == False:
@@ -40,15 +41,12 @@ def graph_reader(inputfile, *args): # Reads the file, cleans isolates and non_co
 def plot_network(somegraph, graph_type, *args): #Plots. NOTE: IT IS EXTREMELY SLOW AS IT BUILDS ON PAGERANK AND CLOSENESS MEASURE 
     if graph_type == 1:
         nx.draw_kamada_kawai(somegraph, labels = {n: n for n in somegraph.nodes})
-        plt.show()
     
     if graph_type == 2:
         nx.draw_spectral(somegraph, labels = {n: n for n in somegraph.nodes})
-        plt.show()
 
     if graph_type == 3:
         nx.draw_spring(somegraph, labels = {n: n for n in somegraph.nodes})
-        plt.show()
     
     if graph_type == 4:
         close = nx.closeness_centrality(somegraph)
@@ -58,8 +56,10 @@ def plot_network(somegraph, graph_type, *args): #Plots. NOTE: IT IS EXTREMELY SL
         nsize = (nsize - min(nsize)) /(max(nsize) - min(nsize))
         nodes = nx.draw_networkx_nodes(somegraph, pos = posNX, node_size = nsize)
         edges = nx.draw_networkx_edges(somegraph, pos = posNX, alpha = 0.2, with_labels = True)
-        plt.show()
-
+    
+    plt.show()
+    #plt.savefig("plot.png", dpi=1000) #check on dpi=
+    
 def hist_plotter(somegraph): #Shitty histogram plotter
     degrees = somegraph.degree() #Returns a tuple
     print(degrees)
@@ -87,7 +87,9 @@ def bipartite_plot(somegraph, top): #A plot function for bipartite graphs (didnt
     plt.show()
 
 def projector(network, nodes, projector_type): #Found a bug in Micheles code. This is copypasted, but I implemented it with another parameter to change between projections faster 
-    if projector_type == 1:
+    
+    # Simple projection
+    if projector_type == 1:    
         T = nx.algorithms.bipartite.matrix.biadjacency_matrix(network, row_order = nodes)
         U = T * T.T
         U.setdiag(0)
@@ -95,8 +97,8 @@ def projector(network, nodes, projector_type): #Found a bug in Micheles code. Th
         G = nx.from_scipy_sparse_matrix(U)
         return nx.relabel_nodes(G, {i: nodes[i] for i in range(len(nodes))})
 
-
-    if projector_type == 2:
+    #  Hyperbolic weights projecton
+    if projector_type == 2:    
         T = nx.algorithms.bipartite.matrix.biadjacency_matrix(network, row_order = nodes)
         T /= T.sum(axis = 0)
         T = sparse.csr_matrix(T)
@@ -106,8 +108,8 @@ def projector(network, nodes, projector_type): #Found a bug in Micheles code. Th
         G = nx.from_scipy_sparse_matrix(U)
         return nx.relabel_nodes(G, {i: nodes[i] for i in range(len(nodes))})
 
-
-    if projector_type == 3:
+     # Probs projection 
+    if projector_type == 3:    
         T = nx.algorithms.bipartite.matrix.biadjacency_matrix(network, row_order = nodes)
         T_norm = normalize(T, norm = 'l1', axis = 1) # Divide each row element with the row sum (Eq. [1] in the paper)
         T_t_norm = normalize(T.T, norm = 'l1', axis = 1) # Divide each row element of the transpose with the transposed row sum (Eq. [2] in the paper) 
@@ -133,7 +135,8 @@ def transform_for_bb(G):
     return G_df
 
 def backboning(somegraph, type):
-    if type == 1: 
+    
+    if type == 1:     
         return bb.noise_corrected(somegraph)
 
     if type == 2:
@@ -150,7 +153,9 @@ load_graph = graph_reader('data.txt')
 graph_projected = projector(load_graph, rows, 1)
 graph_backbone_ready = transform_for_bb(graph_projected)
 backboned = backboning(graph_backbone_ready, 1)
-backboned.to_csv(noise_corr.csv, encoding='utf-8')
+backboned.to_csv('noise_corr.csv', sep = ";", encoding='utf-8')
+
+
 
 
 """ 
