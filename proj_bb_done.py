@@ -146,13 +146,12 @@ def backboning(somegraph, type):
         return bb.disparity_filter(somegraph)
 
 
-
-
 load_graph = graph_reader('data.txt')
 graph_projected = projector(load_graph, rows, 1)
 graph_backbone_ready = transform_for_bb(graph_projected)
 backboned = backboning(graph_backbone_ready, 1)
 backboned.to_csv(noise_corr.csv, encoding='utf-8')
+
 
 """ 
     Projector function:
